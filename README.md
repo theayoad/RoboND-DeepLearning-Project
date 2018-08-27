@@ -7,7 +7,8 @@
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/1155/view) Points
 ---
-
+### Achieving Semantic Segmentation using a Fully Convolutional Neural Network
+In a Fully Convolutional Neural Network (FCN), each layer is a convolutional layer. Moreover, as opposed to a fully connected layer or multilayered perceptron (MLP) at the end of the network, which are typically used to achieve end goal of classification in convolutional networks, a convolutional layer is used to classify each data point / pixel within the initial input layer / image. Semantic segmentation is achieved through use of a FCN by producing a final output layer with equivalent dimensions to the input layer where each data point / pixel is classified and spatial information matched and retained from input layer. FCN architecture for  semantic segmentation architecture consists of an encoder network (a series of convolutional layers that reduces input layer to a deeper 1x1 convolution layer) followed by a decoder network (a series of convolutional layers that project lower resolution features learnt by encoder layers into the higher resolution, spatially consistent features of the output layer).  
 
 
 [![Udacity - Robotics NanoDegree Program](https://s3-us-west-1.amazonaws.com/udacity-robotics/Extra+Images/RoboND_flag.png)](https://www.udacity.com/robotics)
