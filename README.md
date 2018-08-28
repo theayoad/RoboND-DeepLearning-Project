@@ -158,8 +158,10 @@ print(final_score)
 <p align="center"><img src="./misc_images/quad_following.png"></p>
 
 ### Future Enhancements
-* __Intelligent / Automated Hyperparameter Tuning__
+* __Intelligent / Automated Hyperparameter Tuning__ \
 Hyperparameter tuning in this project was a long and tedious process. Through brute force, I was able to settle on a set of hyperparameters that was ultimately functional but not optimal (i.e the computational time required coupled with the relatively low performance score indicates much optimization still needs to be done). Using the [Hyperopt library](https://hyperopt.github.io/hyperopt/) to achieve distributed, asynchronous optimization or implementing Bayesian optimization methods such as random forest regression or gaussian process surrogate models could serve to facilitate efficient, optimized hypertuning.
-* __Detail Optimized Pooling__: There are various pooling techniques and methods that serve to optimize maintenance of high resolution details. With more time, I would try out different combinations of max and average pooling techniques (which increase the receptive field relative to a feature or give added weight to frequency of a feature in pixel space respectively) and assess how different combinations of these techniques affect classification as measured by IoU.
-* __Compare and Contrast Weight Decay Regularization Techniques__: I would like to see how different weight decay regularization techniques affect runtime efficiency and potentially improve or degrade local classification 
+* __Detail Optimized Pooling__ \
+There are various pooling techniques and methods that serve to optimize maintenance of high resolution details. With more time, I would try out different combinations of max and average pooling techniques (which increase the receptive field relative to a feature or give added weight to frequency of a feature in pixel space respectively) and assess how different combinations of these techniques affect classification as measured by IoU.
+* __Compare and Contrast Weight Decay Regularization Techniques__ \
+I would like to see how different weight decay regularization techniques affect runtime efficiency and potentially improve or degrade local classification 
 in the output layer of the FCN model. 
