@@ -102,26 +102,26 @@ workers = 2  # default
 
 ### Prediction / Evaluation Results
 My final trained model (and its config file) can be found [here](./data/weights)
-* With this model I was able to achieve a final score of .41
+* With this model I was able to achieve a final score of .413
 #### Scores for while the quad is following behind the target.
-number of validation samples intersection over the union evaulated on 542
-average intersection over union for background is 0.996086873701149
-average intersection over union for other people is 0.37960521360255967
-average intersection over union for the hero is 0.8859202840784893
+number of validation samples intersection over the union evaulated on 542 \
+average intersection over union for background is 0.996086873701149 \
+average intersection over union for other people is 0.37960521360255967 \
+average intersection over union for the hero is 0.8859202840784893 \
 number true positives: 537, number false positives: 0, number false negatives: 2
 
 #### Scores for images while the quad is on patrol and the target is not visable
-number of validation samples intersection over the union evaulated on 270
-average intersection over union for background is 0.986605416320466
-average intersection over union for other people is 0.7317068795062905
-average intersection over union for the hero is 0.0
-number true positives: 0, number false positives: 13, number false negatives: 0
+number of validation samples intersection over the union evaulated on 270 \
+average intersection over union for background is 0.986605416320466 \
+average intersection over union for other people is 0.7317068795062905 \
+average intersection over union for the hero is 0.0 \
+number true positives: 0, number false positives: 13, number false negatives: 0 
 
 #### This score measures how well the neural network can detect the target from far away
-number of validation samples intersection over the union evaulated on 322
-average intersection over union for background is 0.9969784507861674
-average intersection over union for other people is 0.47084940035162237
-average intersection over union for the hero is 0.19596187533328782
+number of validation samples intersection over the union evaulated on 322 \
+average intersection over union for background is 0.9969784507861674 \
+average intersection over union for other people is 0.47084940035162237 \
+average intersection over union for the hero is 0.19596187533328782 \ 
 number true positives: 114, number false positives: 0, number false negatives: 187
 
 #### Sum all the true positives, etc from the three datasets to get a weight for the score
