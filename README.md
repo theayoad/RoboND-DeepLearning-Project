@@ -8,7 +8,7 @@
 ## [Rubric](https://review.udacity.com/#!/rubrics/1155/view) Points
 ---
 ### Achieving Semantic Segmentation using a Fully Convolutional Neural Network 
-In a Fully Convolutional Neural Network (FCN), each layer is a convolutional layer. This differs from approaches to classification in typical convolutional network schemes where a fully connected layer (each neuron is connected to each neuron in an antecedent layer allowing for spatial and global integration of multiple features) or a multilayered perceptron is applied at end of a convolutional neural network. A convolutional layer is applied at the end of FCNs to classify (i.e label with a color) pixel state of an input image. Semantic segmentation is achieved by producing an output layer with spatially matched dimensionality in which each pixel from the input image is classified and spatial information from input layer ultimately retained — this faciliates identification of objects through encoded location in local space and is the basis of training an FCN to get a simulated quadcopter to follow a target in space. FCN architecture for semantic segmentation consists of an encoder network (a series of convolutional layers that reduces input layer to a 1x1 convolution layer) followed by a decoder network (a series of convolutional layers that projects the higher resolution features of the encoder layers into the resolution, spatially consistent features of the output layer).  
+In a Fully Convolutional Neural Network (FCN), each layer is a convolutional layer. This differs from approaches to classification in typical convolutional network schemes where a fully connected layer (each neuron is connected to each neuron in an antecedent layer allowing for spatial and global integration of multiple features) or a multilayered perceptron is applied at end of a convolutional neural network. A convolutional layer is applied at the end of FCNs to classify (i.e label with a color) pixel state of an input image. Semantic segmentation is achieved by producing an output layer with spatially matched dimensionality in which each pixel from the input image is classified and spatial information from input layer ultimately retained — this faciliates identification of objects through encoded location in local space and is the basis of training an FCN to get a simulated quadcopter to follow a target in space. FCN architecture for semantic segmentation consists of an encoder network (a series of convolutional layers that reduces input layer to a 1x1 convolution layer) followed by a decoder network (a series of convolutional layers that projects the finer, higher resolution features of the encoder layers into the features of the output layer with input layer spatially matched dimensionality).  
 
 #### Encoder Network
 Each layer of the encoder network is a separable convolution layer that reduces the number of parameters as would be required by a regular convolution layer. This reduction of needed parameters ultimately functions to improve runtime efficiency and also reduce overfitting by providing less parameters to which to fit to (obliges network to focus more on generalized patterns)
@@ -34,10 +34,22 @@ To project the lower resolution features of the encoder layers into the higher r
 def bilinear_upsample(input_layer):
     output_layer = BilinearUpSampling2D((2,2))(input_layer)
     return output_layer
+   
+def decoder_block(small_ip_layer, large_ip_layer, filters):
+    # Upsample the small input layer using the bilinear_upsample() function.
+    upsampled_input_layer = bilinear_upsample(input_layer=small_ip_layer)
+    # Concatenate the upsampled and large input layers using layers.concatenate
+    concatenated_upsampled_and_large_input_layer = layers.concatenate([upsampled_input_layer, large_ip_layer])
+    # Add some number of separable convolution layers
+    separable_convolution_layer_1 = separable_conv2d_batchnorm(input_layer=concatenated_upsampled_and_large_input_layer, filters=filters)
+    separable_convolution_layer_2 = separable_conv2d_batchnorm(input_layer=separable_convolution_layer_1, filters=filters)
+    output_layer = separable_conv2d_batchnorm(input_layer=separable_convolution_layer_2, filters=filters)
+    return output_layer
 ```
+Layer concatenation and three following separable convolution layers are implemented after upsampling small input layer to In to optimize the preservation of fine, higher resolution details from preceding layers as the decoder network decodes and upsamples to a size that has equivalent dimensionality with initial input layer. Concatenating layers is equivalent to element-wise addition of layers but does not require all layers to have same to execute operation.
 
 ##### Batch Normalization
-Each layer of the encoder network is batch normalized (as well for each layer of the decoder network). In general, normalizing the inputs of a network optimizes runtime efficiency and enhances network performance because input data with more variance around the mean is more opinionated and will harshly penalize points from central mean peak; conversely, data with less variance around the mean is less opinionated initially and will optimization because more opinionated as training progresses over time. Batch normalization encompasses treating each layer as the input layer to a smaller network and normalizing each layers inputs.
+Each layer within encoder and decoder blocks is normalized. Overall, normalizing inputs enhances performance because input data with more variance around mean will be more opinionated and will harshly penalize distance from central mean peak; input data with less variance around mean is less opinionated at start and becomes more opinionated with training. Batch normalization encompasses treating each layer as input layer to a smaller network and thus normalizing each layer's inputs.
 
 ##### Compute Color Histograms
 * In process of reading RGB data from the point clouds from each snapshot, I converted RGB data to HSV (hue-saturation-value) color space to increase robustness of object recognition (RGB is sensitive to changes in brightness etc.)
