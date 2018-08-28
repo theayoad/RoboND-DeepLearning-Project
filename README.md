@@ -117,14 +117,14 @@ number of validation samples intersection over the union evaulated on 270 \
 average intersection over union for background is 0.986605416320466 \
 average intersection over union for other people is 0.7317068795062905 \
 average intersection over union for the hero is 0.0 \
-number true positives: 0, number false positives: 13, number false negatives: 0 
+\number true positives: 0, number false positives: 13, number false negatives: 0 
 
 #### This score measures how well the neural network can detect the target from far away
 number of validation samples intersection over the union evaulated on 322 \
 average intersection over union for background is 0.9969784507861674 \
 average intersection over union for other people is 0.47084940035162237 \
-average intersection over union for the hero is 0.19596187533328782 \ 
-number true positives: 114, number false positives: 0, number false negatives: 187
+average intersection over union for the hero is 0.19596187533328782 \
+\number true positives: 114, number false positives: 0, number false negatives: 187
 
 #### Sum all the true positives, etc from the three datasets to get a weight for the score
 ```python
