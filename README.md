@@ -8,13 +8,33 @@
 ## [Rubric](https://review.udacity.com/#!/rubrics/1155/view) Points
 ---
 ### Achieving Semantic Segmentation using a Fully Convolutional Neural Network 
-In a Fully Convolutional Neural Network (FCN), each layer is a convolutional layer. This differs from approaches to classification in typical convolutional network schemes where a fully connected layer (each neuron is connected to each neuron in an antecedent layer allowing for spatial and global integration of multiple features) or a multilayered perceptron is applied at end of a convolutional neural network. A convolutional layer is applied at the end of FCNs to classify (i.e label with a color) pixel state of an input image. Semantic segmentation is achieved by producing an output layer with spatially matched dimensionality in which each pixel from the input image is classified and spatial information from input layer ultimately retained — this faciliates identification of objects through encoded location in local space and is the basis of training an FCN to get a simulated quadcopter to follow a target in space. FCN architecture for semantic segmentation consists of an encoder network (a series of convolutional layers that reduces input layer to a 1x1 convolution layer) followed by a decoder network (a series of convolutional layers that project lower resolution features of the encoder layers into higher resolution, spatially consistent features of the output layer).  
+In a Fully Convolutional Neural Network (FCN), each layer is a convolutional layer. This differs from approaches to classification in typical convolutional network schemes where a fully connected layer (each neuron is connected to each neuron in an antecedent layer allowing for spatial and global integration of multiple features) or a multilayered perceptron is applied at end of a convolutional neural network. A convolutional layer is applied at the end of FCNs to classify (i.e label with a color) pixel state of an input image. Semantic segmentation is achieved by producing an output layer with spatially matched dimensionality in which each pixel from the input image is classified and spatial information from input layer ultimately retained — this faciliates identification of objects through encoded location in local space and is the basis of training an FCN to get a simulated quadcopter to follow a target in space. FCN architecture for semantic segmentation consists of an encoder network (a series of convolutional layers that reduces input layer to a 1x1 convolution layer) followed by a decoder network (a series of convolutional layers that projects the higher resolution features of the encoder layers into the resolution, spatially consistent features of the output layer).  
 
 #### Encoder Network
-Each layer of the encoder network is a separable convolution layer that reduces the number of parameters as would be required by a regular convolution layer. This reduction of needed parameters ultimately functions to improve runtime efficiency and also reduce overfitting by providing less parameters to which to fit to (obliges network to focus more on generalized patterns within dataset)
+Each layer of the encoder network is a separable convolution layer that reduces the number of parameters as would be required by a regular convolution layer. This reduction of needed parameters ultimately functions to improve runtime efficiency and also reduce overfitting by providing less parameters to which to fit to (obliges network to focus more on generalized patterns)
+* Separable convolution layers for each encoder block in the FCN was generated through the following helper function
+* A ReLU activation function, *same* padding parameter, and kernel_size = 3 are applied by default.
+```python
+def encoder_block(input_layer, filters, strides):
+    # Create a separable convolution layer using the separable_conv2d_batchnorm() function.
+    output_layer = separable_conv2d_batchnorm(input_layer, filters, strides)
+    return output_layer
+    
+ def separable_conv2d_batchnorm(input_layer, filters, strides=1):
+  output_layer = SeparableConv2DKeras(filters=filters,kernel_size=3, strides=strides,
+                           padding='same', activation='relu')(input_layer)
 
+  output_layer = layers.BatchNormalization()(output_layer) 
+  return output_layer
+```
 #### Decoder Network
-To project the lower resolution features of the encoder layers into the higher resolution features of each output layer (in other words, to achieve upsampling), I took used the bilinearly upsampling approach of averaging the four nearest pixels located diagonally to each pixel to arrive at a new pixel value for new pixel values.
+To project the lower resolution features of the encoder layers into the higher resolution features of each output layer (in other words, to achieve upsampling), I used the bilinearly upsampling approach of averaging the four nearest pixels located diagonally to each pixel to arrive at a new pixel value for new pixel values.
+* Upsampling by a factor of 2 was implemented through the following helper function (with a keras backend)
+```python
+def bilinear_upsample(input_layer):
+    output_layer = BilinearUpSampling2D((2,2))(input_layer)
+    return output_layer
+```
 
 ##### Batch Normalization
 Each layer of the encoder network is batch normalized (as well for each layer of the decoder network). In general, normalizing the inputs of a network optimizes runtime efficiency and enhances network performance because input data with more variance around the mean is more opinionated and will harshly penalize points from central mean peak; conversely, data with less variance around the mean is less opinionated initially and will optimization because more opinionated as training progresses over time. Batch normalization encompasses treating each layer as the input layer to a smaller network and normalizing each layers inputs.
