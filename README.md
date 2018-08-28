@@ -54,7 +54,7 @@ Each layer within the encoder and decoder blocks is normalized. Normalizing inpu
 output_layer = layers.BatchNormalization()(output_layer) 
 ```
 ### FCN Model
-
+<p align="center"> <img src="./misc_images/FCN_model.png"> </p>
 ```python
 def fcn_model(inputs, num_classes):
     # Add Encoder Blocks. 
