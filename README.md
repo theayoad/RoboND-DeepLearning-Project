@@ -10,6 +10,18 @@
 ### Achieving Semantic Segmentation using a Fully Convolutional Neural Network 
 In a Fully Convolutional Neural Network (FCN), each layer is a convolutional layer. This differs from approaches to classification in typical convolutional network schemes where a fully connected layer (each neuron is connected to each neuron in an antecedent layer allowing for spatial and global integration of multiple features) or a multilayered perceptron is applied at end of a convolutional neural network. A convolutional layer is applied at the end of FCNs to classify (i.e label with a color) pixel state of an input image. Semantic segmentation is achieved by producing an output layer with spatially matched dimensionality in which each pixel from the input image is classified and spatial information from input layer ultimately retained — this faciliates identification of objects through encoded location in local space and is the basis of training an FCN to get a simulated quadcopter to follow a target in space. FCN architecture for semantic segmentation consists of an encoder network (a series of convolutional layers that reduces input layer to a 1x1 convolution layer) followed by a decoder network (a series of convolutional layers that project lower resolution features of the encoder layers into higher resolution, spatially consistent features of the output layer).  
 
+#### Encoder Network
+Each layer of the encoder network is a separable convolution layer that reduces the number of parameters as would be required by a regular convolution layer. This reduction of needed parameters ultimately functions to improve runtime efficiency and also reduce overfitting by providing less parameters to which to fit to (obliges network to focus more on generalized patterns within dataset)
+
+#### Decoder Network
+To project the lower resolution features of the encoder layers into the higher resolution features of each output layer (in other words, to achieve upsampling), I took used the bilinearly upsampling approach of averaging the four nearest pixels located diagonally to each pixel to arrive at a new pixel value for new pixel values.
+
+##### Batch Normalization
+Each layer of the encoder network is batch normalized (as well for each layer of the decoder network). In general, normalizing the inputs of a network optimizes runtime efficiency and enhances network performance because input data with more variance around the mean is more opinionated and will harshly penalize points from central mean peak; conversely, data with less variance around the mean is less opinionated initially and will optimization because more opinionated as training progresses over time. Batch normalization encompasses treating each layer as the input layer to a smaller network and normalizing each layers inputs.
+
+##### Compute Color Histograms
+* In process of reading RGB data from the point clouds from each snapshot, I converted RGB data to HSV (hue-saturation-value) color space to increase robustness of object recognition (RGB is sensitive to changes in brightness etc.)
+* I used 32 bins, so roughly 12.5% of color data would fall into each bin (initially, I experimented with larger number of bins but didn't see increase in performance enough to justify increase in processing time larger number bins brought on)
 
 [![Udacity - Robotics NanoDegree Program](https://s3-us-west-1.amazonaws.com/udacity-robotics/Extra+Images/RoboND_flag.png)](https://www.udacity.com/robotics)
 
