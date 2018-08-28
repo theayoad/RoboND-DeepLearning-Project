@@ -95,6 +95,55 @@ workers = 2  # default
 * __learning_rate__: Holding num_epochs, batch_size, and steps_per_epoch constant at 2, 16, and 500 respectively, I started with a learning rate of .05 and tuned the learning rate after each run to optimize convergence and loss minimization. I immediately recognized that any learning_rate greater than about .15 was too large to allow proper convergence (additionally, adding more epochs up to 4 did not help the issue). I then settled on a learning rate of .01 and tried to minimize it to optimize convergence and final scores. I noticed decreasing the learning rate below **.008** impacted the performance of the network (as determined by final score).
 * __batch_size__: Holding learning_rate, num_epochs, and steps_per_epoch constant at .01, 2, and 500 respectively,  I started with a batch size of 4 and doubled the batch size. Up to a batch size of **32**, the time per epoch decreased while performance of the network steadily increased. Higher than a batch size of 32, the time per epoch seemed to decrease while the performance of the network degraded.
 * __num_epochs__: After switching to p2.xlarge on AWS, I was able to start tuning this hyperparameter. At first I set this value to 40 with learning_rate, batch_size, and steps_per_epoch at .008, 32, and 500. I noticed that after about 25 epochs additional epochs did not really help performance of the network (probably due to occurence of overfitting). I set the value for this hyperparameter at **24** which is right below the point at which I noticed decreasing returns for additional epochs.
+    * divergence (due to overfitting) starts to occur after 25 epochs (as shown below)
+    <p align="center"><img src="./misc_images/loss_at_25_epochs.png" height="60%" width="60%"></p>
 * __steps_per_epoch__: The first value I tried for this hyperparameter was 500. I optimized for all other hyperparameters (while using default for validation_steps and workers) before I tuned this hyperparameter. Once I had settled on working hyperparameters for others involved tuning this hyperparameter did not seem to affect much with regards to overall performance other than computatation time (which is a ultimately an important consideration). I settled on a value of **480**. I did not want to veer away from the initial value of 500 which was functional but also wanted to optimize (however slightly) for computational time.
 
-### Results
+### Prediction / Evaluation Results
+My final trained model (and its config file) can be found [here](./data/weights)
+* With this model I was able to achieve a final score of .41
+#### Scores for while the quad is following behind the target.
+number of validation samples intersection over the union evaulated on 542
+average intersection over union for background is 0.996086873701149
+average intersection over union for other people is 0.37960521360255967
+average intersection over union for the hero is 0.8859202840784893
+number true positives: 537, number false positives: 0, number false negatives: 2
+
+#### Scores for images while the quad is on patrol and the target is not visable
+number of validation samples intersection over the union evaulated on 270
+average intersection over union for background is 0.986605416320466
+average intersection over union for other people is 0.7317068795062905
+average intersection over union for the hero is 0.0
+number true positives: 0, number false positives: 13, number false negatives: 0
+
+#### This score measures how well the neural network can detect the target from far away
+number of validation samples intersection over the union evaulated on 322
+average intersection over union for background is 0.9969784507861674
+average intersection over union for other people is 0.47084940035162237
+average intersection over union for the hero is 0.19596187533328782
+number true positives: 114, number false positives: 0, number false negatives: 187
+
+#### Sum all the true positives, etc from the three datasets to get a weight for the score
+```python
+true_pos = true_pos1 + true_pos2 + true_pos3
+false_pos = false_pos1 + false_pos2 + false_pos3
+false_neg = false_neg1 + false_neg2 + false_neg3
+
+weight = true_pos/(true_pos+false_neg+false_pos)
+print(weight)
+```
+0.7631887456037515
+
+#### The IoU for the dataset that never includes the hero is excluded from grading
+```python
+final_IoU = (iou1 + iou3)/2
+print(final_IoU)
+```
+0.540941079706
+
+#### And the final grade score is 
+```python
+final_score = final_IoU * weight
+print(final_score)
+```
+0.412840144066
