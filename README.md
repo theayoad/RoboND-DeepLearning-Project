@@ -49,7 +49,31 @@ def decoder_block(small_ip_layer, large_ip_layer, filters):
 Layer concatenation and three following separable convolution layers are implemented after upsampling small input layer to In to optimize the preservation of fine, higher resolution details from preceding layers as the decoder network decodes and upsamples to a size that has equivalent dimensionality with initial input layer. Concatenating layers is equivalent to element-wise addition of layers but does not require all layers to have same to execute operation.
 
 ##### Batch Normalization
-Each layer within encoder and decoder blocks is normalized. Overall, normalizing inputs enhances performance because input data with more variance around mean will be more opinionated and will harshly penalize distance from central mean peak; input data with less variance around mean is less opinionated at start and becomes more opinionated with training. Batch normalization encompasses treating each layer as input layer to a smaller network and thus normalizing each layer's inputs.
+Each layer within the encoder and decoder blocks is normalized. Normalizing inputs to a layer enhances performance because input data with more variance around mean will result in opinionated weighting that harshly penalizes increasing distance from central mean peak; input data with less variance around mean results in less opinionated weighting at start that only becomes more opinionated with training / learning of patterns within data. Batch normalization encompasses treating each layer as input layer to a smaller network and requires normalization of each layer's inputs.
+```python
+output_layer = layers.BatchNormalization()(output_layer) 
+```
+### FCN Model
+
+```python
+def fcn_model(inputs, num_classes):
+    # Add Encoder Blocks. 
+    # Remember that with each encoder layer, the depth of your model (the number of filters) increases.
+    encoder_block_layer_1 = encoder_block(input_layer=inputs, filters=32, strides=2)
+    encoder_block_layer_2 = encoder_block(input_layer=encoder_block_layer_1, filters=64, strides=2)
+    encoder_block_layer_3 = encoder_block(input_layer=encoder_block_layer_2, filters=128, strides=2)
+    # Add 1x1 Convolution layer using conv2d_batchnorm().
+    one_to_one_convolution_layer = conv2d_batchnorm(input_layer=encoder_block_layer_3, filters=256, kernel_size=1, strides=1)
+    # Add the same number of Decoder Blocks as the number of Encoder Blocks
+    decoder_block_layer_4 = decoder_block(small_ip_layer=one_to_one_convolution_layer, large_ip_layer=encoder_block_layer_2, filters=128)
+    decoder_block_layer_5 = decoder_block(small_ip_layer=decoder_block_layer_4, large_ip_layer=encoder_block_layer_1, filters=64)
+    x = decoder_block(small_ip_layer=decoder_block_layer_5, large_ip_layer=inputs, filters=32)
+    # The function returns the output layer of your model. "x" is the final layer obtained from the last decoder_block()
+    return layers.Conv2D(num_classes, 1, activation='softmax', padding='same')(x)
+```
+The architecture of the FCN model of my project consists of three encoder layers and three decoder block layers. After each encoder layer, the depth of the model doubles. I choose to have the depth double after each layer in relation to value of the stride parameter choosen for each encoder layer of 2. Moreover, given that the width-height dimensionality of each encoder layer reduces by a factor of ~2 after each convolution given stride of 2, to prevent loss of finer details and to optimize preservation of spatial information, I translated reduction in width-height dimensionality after each convolution to increased depth / more filters are present after each convolution.
+* Regarding the 1 x 1 convolution layer, in general, a 1 x 1 convolution is a feature pooling technique that is implemented to reduce filter depth which in turn optimizes for computational cost amongst other things. However, I found that when I reduced the filter depth of the 1 x 1 convolution layer performance of the FNC model suffered. I suppose this reduction in performance stems from a loss of higher detail resolution due to reductive feature pooling. I found that keeping filter depth at 128 or further doubling it to 256 optimized for FCN model performance. As a side note, I tested out a filter depth of 256 to see how that would affect performance and it seemed to give a slight boost in performance to the FCN model; I suppose this is due to a degree of enhanced fitting from expanded number of features.
+
 
 ##### Compute Color Histograms
 * In process of reading RGB data from the point clouds from each snapshot, I converted RGB data to HSV (hue-saturation-value) color space to increase robustness of object recognition (RGB is sensitive to changes in brightness etc.)
