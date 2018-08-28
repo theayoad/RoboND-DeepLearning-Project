@@ -74,6 +74,10 @@ def fcn_model(inputs, num_classes):
     return layers.Conv2D(num_classes, 1, activation='softmax', padding='same')(x)
 ```
 The architecture of the FCN model of my project consists of three encoder layers and three decoder block layers. After each encoder layer, the depth of the model doubles. I choose to have the depth double after each layer in relation to value of the stride parameter choosen for each encoder layer of 2. Moreover, given that the width-height dimensionality of each encoder layer reduces by a factor of ~2 after each convolution given stride of 2, to prevent loss of finer details and to optimize preservation of spatial information, I translated reduction in width-height dimensionality after each convolution to increased depth / more filters are present after each convolution.
+* I first tried an FCN model of two encoder layers followed by two decoder layers but performance was suboptimal (final score of ~.23). I added additional encoder and decoder layers and was able to bump up performance up to ~.34 mark (after tinkering around with hyperparameters from here I was able to get over pass mark of .40). 
+    * **I discuss hyperparameter tuning and selection in next section.**
+
+
 * Regarding the 1 x 1 convolution layer, in general, a 1 x 1 convolution is a feature pooling technique that is implemented to reduce filter depth which in turn optimizes for computational load amongst other things. I found that when I reduced the filter depth of the 1 x 1 convolution layer performance of the FNC model suffered. I suppose this reduction in performance stems from a loss of higher detail resolution due to reductive feature pooling. I found that keeping filter depth at 128 or further doubling it to 256 optimized for FCN model performance. As a side note, I tested out a filter depth of 256 to see how that would affect performance and it seemed to give a slight boost in performance to the FCN model — I suppose this is due to a degree of enhanced fitting from expanded features.
 
 
