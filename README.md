@@ -3,7 +3,7 @@
 ## Deep Learning Project
 ### Writeup by Ayo Adedeji
 ---
-#### Instructions on how to implement segmentation network, collection training data, train model, and test in simulation are found here [here](./project_setup.md).
+#### Instructions on how to implement segmentation network, collection training data, train model, and test in simulation are found [here](./project_setup.md).
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/1155/view) Points
 ---
